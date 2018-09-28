@@ -3,7 +3,7 @@ public class Project {
 	private String projTitle;
 	private int projDuration;
 	private String projDependencies;
-	private Project[] dependencies;
+	private String[] dependencies; //for later use with parser and error check
 	
 	// Constructor to initialize all member variables
 	public Project() {

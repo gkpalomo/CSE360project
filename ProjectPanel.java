@@ -1,4 +1,4 @@
-import java.awt.*; 
+import java.awt.*;  
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -13,10 +13,11 @@ public class ProjectPanel extends JPanel {
 	   private JButton button1,button2,button3,button4,button5;
 	   private JLabel label1, label2, label3, label4;
 	   private JTextField field1,field2,field3;
-	   private JTextArea area1;
-	   private JPanel panel1,panel2,panel3,panel4;
-	   private JScrollPane scroll;
-	   private JList projList;
+	   private JTextArea area1,area2;
+	   private JPanel panel1,panel2,panel3,panel4,panel5,panel6,panel7;
+	   private JScrollPane scroll,scroll2,scroll3;
+	   private JList projList,list1,list2;
+	   private Project selectedProj1,selectedProj2;
 	   
 	   private String projName, projLocation;
 	   private int projNum;
@@ -27,6 +28,7 @@ public class ProjectPanel extends JPanel {
 		   
 		   this.projectList = projectList;
 		   area1 = new JTextArea("No Activities");
+		   area2 = new JTextArea("No paths to display");
 		    label1 = new JLabel("Activity Title");
 		    label2 = new JLabel("Activity Duration");
 		    label3 = new JLabel("Activity Dependencies");
@@ -35,8 +37,10 @@ public class ProjectPanel extends JPanel {
 		    field2 = new JTextField();
 		    field3 = new JTextField();
 		    button1 = new JButton("Add activity");
-		    button2 = new JButton("Remove activity");
-		    button3 = new JButton("Find Paths!");
+		    button2 = new JButton("Clear all");
+		    button3 = new JButton("Help");
+		    button4 = new JButton("Remove activity");
+		    button5 = new JButton("Find paths!");
 		    projList = new JList(projectList);
 		    
 		    panel1 = new JPanel();
@@ -51,12 +55,18 @@ public class ProjectPanel extends JPanel {
 		    panel2 = new JPanel();
 		    panel2.setLayout(new FlowLayout());
 		    panel2.add(button1);
-		    panel2.add(button2);
-		    panel2.add(button3);
+		    panel2.add(button4);
+		    panel2.add(button5);
+		    
+		    panel6 = new JPanel();
+		    panel6.setLayout(new FlowLayout());
+		    panel6.add(button2);
+		    panel6.add(button3);
 		   
 		    panel3 = new JPanel();
 		    panel3.setLayout(new GridLayout(3,1));
 		    panel3.add(panel2);
+		    panel3.add(panel6);
 		    
 		    panel4 = new JPanel(); //left side panel
 		    panel4.setLayout(new GridLayout(3,1));
@@ -70,10 +80,24 @@ public class ProjectPanel extends JPanel {
 				    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);//adds the text area to a scroll pane
 		      
-		      setLayout(new GridLayout(1,2));
-		      add(panel4);
-		      add(scroll);
 		    
+		    scroll2 = new JScrollPane(area2, 
+				    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		    
+		   
+		      panel5 = new JPanel();
+		      panel5.setLayout(new GridLayout(1,2));
+		      panel5.add(panel4);
+		      panel5.add(scroll);
+		    
+		      
+		      
+			   setLayout(new GridLayout(2,1));
+			   add(panel5);
+			   add(scroll2);
+			    
+		      
 		      button1.addActionListener(new ButtonListener());
 		    
 	   }
