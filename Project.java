@@ -1,48 +1,47 @@
-
 public class Project {
-	private String projTitle;
-	private int projDuration;
-	private String projDependencies;
-	private String[] dependencies; //for later use with parser and error check
-	
-	// Constructor to initialize all member variables
-	public Project() {
-		projTitle = "?";
-		projDuration = 0;
-		projDependencies = "?";
-		dependencies = null;
-	}
+    private String projTitle;
+    private int projDuration;
+    private String projDependencies;
+    private String[] dependencies; //for later use with parser and error check
 
-	// Accessor methods
-	public String getProjTitle() {
-		return projTitle;
-	}
+    // Constructor to initialize all member variables
+    public Project() {
+        projTitle = "?";
+        projDuration = 0;
+        projDependencies = "?";
+        dependencies = null;
+    }
 
-	public int getProjDuration() {
-		return projDuration;
-	}
+    // Accessor methods
+    public String getProjTitle() {
+        return projTitle;
+    }
 
-	public String getProjDependencies() {
-		return projDependencies;
-	}
+    public int getProjDuration() {
+        return projDuration;
+    }
 
-	// Mutator methods
-	public void setProjTitle(String name) {
-		projTitle = name;
-	}
+    public String getProjDependencies() {
+        return projDependencies;
+    }
 
-	public void setProjDuration(int num) {
-		projDuration = num;
-	}
+    // Mutator methods
+    public void setProjTitle(String name) {
+        projTitle = name;
+    }
 
-	public void setProjDependencies(String dependencies) {
-		projDependencies = dependencies;
-	}
+    public void setProjDuration(int num) {
+        projDuration = num;
+    }
 
-	// toString() method returns a string containing its title, number, and location
-	public String toString() {
-		String result = "\nActivity Title:\t\t" + projTitle + ",\nActivity Duration:\t" + projDuration
-				+ ",\nActivity Dependencies:\t" + projDependencies + "\n\n";
-		return result;
-	}
+    public void setProjDependencies(String dependencies) {
+        projDependencies = dependencies;
+    }
+
+    // toString() method returns a string containing its title, number, and location
+    public String toString() {
+        String result = "\nActivity Title:\t\t" + projTitle + "\nActivity Duration:\t" + projDuration
+                + "\nActivity Dependencies:\t" + projDependencies + "\n\n";
+        return result;
+    }
 }
