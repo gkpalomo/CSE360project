@@ -265,8 +265,8 @@ public class ProjectPanel extends JPanel {
 					pathList = new ArrayList<Path>();
 					int startNode = 0;
 					for (Project proj : projectList) {
-						dependencyFlag = false;
 						for (String dependency : proj.getProjDependencies().split(",")) {
+							dependencyFlag = false;
 							if (dependency.equals("")) {
 								startNode = edgeList.size();
 								dependencyFlag = true;
