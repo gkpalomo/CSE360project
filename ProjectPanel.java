@@ -26,7 +26,8 @@ public class ProjectPanel extends JPanel {
 
 	private String projName, projDepends;
 	private int projNum;
-	private boolean error1, error2, error3, error4;
+	private boolean error1, error2, dependencyFlag, error4;
+	private boolean startPointFlag = false;
 
 	// constructor for project panel to be used in applet
 	public ProjectPanel(Vector<Project> projectList) {
@@ -109,7 +110,6 @@ public class ProjectPanel extends JPanel {
 	// and the list of project information,
 	// and it also does error checking.
 	private class ButtonListener implements ActionListener {
-		private boolean startPointFlag = false;
 
 		public void actionPerformed(ActionEvent event) {
 			// booleans for use with the error handling of adding a project
@@ -144,12 +144,12 @@ public class ProjectPanel extends JPanel {
 					}
 				}
 
-				if(projDepends.equals("") && startPointFlag) {
+				if (projDepends.equals("") && startPointFlag) {
 					errorLabel.setText("Multiple start points detected");
 					clearInputs();
 					return;
 				}
-				
+
 				if (!(error1 || error2))// if all criteria are met for it to be a new project,
 										// creates and adds to vector
 				{
@@ -157,8 +157,8 @@ public class ProjectPanel extends JPanel {
 					proj.setProjDependencies(projDepends);
 					proj.setProjDuration(projNum);
 					proj.setProjTitle(projName);
-					
-					if(projDepends.equals("") && !startPointFlag) {
+
+					if (projDepends.equals("") && !startPointFlag) {
 						startPointFlag = true;
 					}
 
@@ -196,8 +196,8 @@ public class ProjectPanel extends JPanel {
 
 				for (int i = 0; i < projectList.size(); i++) {
 					if (projectList.get(i).getProjTitle().equals(projToBeRemoved)) {
-						if(projectList.get(i).getProjDependencies().equals("")) {
-							startPointFlag = true;
+						if (projectList.get(i).getProjDependencies().equals("")) {
+							startPointFlag = false;
 						}
 						projectList.remove(i);
 						removed = true;
@@ -251,8 +251,13 @@ public class ProjectPanel extends JPanel {
 
 		public void actionPerformed(ActionEvent event) {
 			Object source = event.getSource();
-			if (source == findPathsButton) {
+			if (!startPointFlag) {
+				errorLabel.setText("No starting point detected");
+				return;
+			}
+			if (source == findPathsButton && startPointFlag) {
 				errorLabel.setText("");
+				dependencyFlag = false;
 				if (projectList.size() == 0) {
 					errorLabel.setText("Please enter activities to find path");
 				} else {
@@ -260,11 +265,21 @@ public class ProjectPanel extends JPanel {
 					pathList = new ArrayList<Path>();
 					int startNode = 0;
 					for (Project proj : projectList) {
-
+						dependencyFlag = false;
 						for (String dependency : proj.getProjDependencies().split(",")) {
 							if (dependency.equals("")) {
 								startNode = edgeList.size();
+								dependencyFlag = true;
 							}
+							for (int j = 0; j < projectList.size(); j++) {
+								if (dependency.equals(projectList.get(j).getProjTitle()))
+									dependencyFlag = true;
+							}
+							if (!dependencyFlag) {
+								errorLabel.setText("Non-existent dependency detected");
+								return;
+							}
+
 							Edge edge = new Edge();
 							edge.setEdge(dependency, proj.getProjTitle(), proj.getProjDuration());
 							edgeList.add(edge);
