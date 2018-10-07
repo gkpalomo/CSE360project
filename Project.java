@@ -1,4 +1,4 @@
-
+package brian_patch_2;
 
 //import java.lang.reflect.Array;
 //import java.util.*;  
@@ -45,7 +45,7 @@ public class Project {
     // toString() method returns a string containing its title, number, and location
     public String toString() {
     	StringBuilder output = new StringBuilder();
-        output.append("\nActivity Title:\t\t");
+        output.append("Activity Title:\t\t");
         output.append(projTitle);
         output.append("\nActivity Duration:\t");
         output.append(projDuration);

@@ -1,7 +1,6 @@
+package brian_patch_2;
 
 import javax.swing.*;
-
-import java.awt.Container;
 import java.util.*;
 
 @SuppressWarnings("deprecation")
@@ -18,11 +17,9 @@ public class main extends JApplet
     //The method init initializes the Applet
     public void init()
     {
-    	projectList = new Vector<Project>();
+        projectList = new Vector<Project>();
         projPanel = new ProjectPanel(projectList);
         getContentPane().add(projPanel);
         setSize (APPLET_WIDTH, APPLET_HEIGHT); //set Applet size
     }
-    
-   
 }  

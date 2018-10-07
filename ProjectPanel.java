@@ -1,12 +1,13 @@
+package brian_patch_2;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+//import java.util.ArrayList;
+//import java.util.Arrays;
+//import java.util.Collections;
 
 public class ProjectPanel extends JPanel {
 
@@ -15,7 +16,7 @@ public class ProjectPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Vector<Project> projectList;// vector shared between the two panel classes
-	private JButton addActButton, clearAllButton, helpButton, remActButton, findPathsButton;
+	private JButton addActButton, clearAllButton, helpButton, remActButton, findPathButton, aboutButton;
 	private JLabel titleLabel, actDurLabel, actDepLabel, errorLabel;
 	private JTextField actField, durField, depField;
 	private JTextArea actArea, pathArea;
@@ -23,18 +24,15 @@ public class ProjectPanel extends JPanel {
 	private JScrollPane scroll, scroll2;// ,scroll3;
 	// private JList projList,list1,list2;
 	// private Project selectedProj1,selectedProj2;
-
-	private String projName, projDepends;
-	private int projNum;
-	private boolean error1, error2, dependencyFlag, error4;
-	private boolean startPointFlag = false;
+	private DirectedGraph dGraph;
 
 	// constructor for project panel to be used in applet
 	public ProjectPanel(Vector<Project> projectList) {
 
+		dGraph = new DirectedGraph();
 		this.projectList = projectList;
 		actArea = new JTextArea("No Activities");
-		pathArea = new JTextArea("No paths to display");
+		pathArea = new JTextArea("No Paths to display");
 		titleLabel = new JLabel("Activity Title");
 		actDurLabel = new JLabel("Activity Duration");
 		actDepLabel = new JLabel("Activity Dependencies");
@@ -46,7 +44,8 @@ public class ProjectPanel extends JPanel {
 		clearAllButton = new JButton("Clear all");
 		helpButton = new JButton("Help");
 		remActButton = new JButton("Remove activity");
-		findPathsButton = new JButton("Find paths!");
+		findPathButton = new JButton("Find Path!");
+		aboutButton = new JButton("About");
 		// projList = new JList(projectList);
 		// Inputs bunched together into one panel
 		inputPanel = new JPanel();
@@ -62,12 +61,13 @@ public class ProjectPanel extends JPanel {
 		topButtonPanel.setLayout(new FlowLayout());
 		topButtonPanel.add(addActButton);
 		topButtonPanel.add(remActButton);
-		topButtonPanel.add(findPathsButton);
+		topButtonPanel.add(findPathButton);
 		// bottom button group
 		botButtonPanel = new JPanel();
 		botButtonPanel.setLayout(new FlowLayout());
 		botButtonPanel.add(clearAllButton);
 		botButtonPanel.add(helpButton);
+		botButtonPanel.add(aboutButton);
 		// all buttons combined
 		allButtonPanel = new JPanel();
 		allButtonPanel.setLayout(new GridLayout(3, 1));
@@ -99,7 +99,8 @@ public class ProjectPanel extends JPanel {
 		addActButton.addActionListener(new ButtonListener());
 		clearAllButton.addActionListener(new ButtonListener());
 		remActButton.addActionListener(new ButtonListener());
-		findPathsButton.addActionListener(new FindPath());
+		findPathButton.addActionListener(new ButtonListener());
+		aboutButton.addActionListener(new ButtonListener());
 
 	}
 
@@ -109,58 +110,49 @@ public class ProjectPanel extends JPanel {
 	// in the text fields to the text area
 	// and the list of project information,
 	// and it also does error checking.
+
 	private class ButtonListener implements ActionListener {
 
+		private boolean hasError;
+		private int eCode; // error code to be used later
+
+		private String projName, projDepends, projDurStr;
+		private int projDuration;
+
 		public void actionPerformed(ActionEvent event) {
+
 			// booleans for use with the error handling of adding a project
-			error1 = false;
-			error2 = false;
+			hasError = false;
+			eCode = 0;
+			/*
+			 * Error Codes: 1 = no input in text fields 2 = no input in the activity name
+			 * field 3 = no duration entered 4 = duration is not an integer 5 = duration is
+			 * negative 6 = duplicate activity names 7 = duplicate starting points
+			 * 
+			 */
+			// noDurError = false;
+			// error2 = false;
+			// error3 = false;
+			// duplicateActError = false;
+
 			Object source = event.getSource();
-
 			// proj must have all fields filled
-			if (source == addActButton && actField.getText().length() > 0 && durField.getText().length() > 0) {
+			if (source == addActButton) {
 
-				try {
-					projNum = Integer.parseInt(durField.getText()); // tries to parse the value as an int, sends error
-																	// if not int
-					projName = (actField.getText());
-					projDepends = depField.getText();
+				projName = (actField.getText());
+				projDepends = depField.getText();
+				projDurStr = durField.getText();
 
-				} catch (java.lang.NumberFormatException e1) {
-					errorLabel.setText("Please enter an integer for the activity duration");// error message to print
-					error1 = true;
-					clearInputs();
-					return;
-				}
+				checkInputErrors(projName, projDurStr, projDepends);
 
-				for (int i = 0; i < projectList.size(); i++)// for loop to cycle through vector
-				{
-					if (projectList.get(i).getProjTitle().equals(projName))// searches for duplicate project numbers and
-																			// duplicate project names
-					{
-						errorLabel.setText("Duplicate activities not allowed");
-						error2 = true;
-						clearInputs();
-					}
-				}
-
-				if (projDepends.equals("") && startPointFlag) {
-					errorLabel.setText("Multiple start points detected");
-					clearInputs();
-					return;
-				}
-
-				if (!(error1 || error2))// if all criteria are met for it to be a new project,
-										// creates and adds to vector
+				if (!hasError)// if all criteria are met for it to be a new
+								// project,
+				// creates and adds to vector
 				{
 					Project proj = new Project();
 					proj.setProjDependencies(projDepends);
-					proj.setProjDuration(projNum);
+					proj.setProjDuration(projDuration);
 					proj.setProjTitle(projName);
-
-					if (projDepends.equals("") && !startPointFlag) {
-						startPointFlag = true;
-					}
 
 					projectList.add(proj);
 					if (projectList.size() == 1) {
@@ -173,19 +165,19 @@ public class ProjectPanel extends JPanel {
 				}
 			}
 
-			else if (source == addActButton && (actField.getText().length() == 0 || durField.getText().length() == 0)) {
-				errorLabel.setText("Please enter required fields");
-				clearInputs();
-			}
+			/*
+			 * else if (source == addActButton && (actField.getText().length() == 0 ||
+			 * durField.getText().length() == 0)) {
+			 * errorLabel.setText("Please enter required fields"); clearInputs(); }
+			 */
 
 			if (source == clearAllButton) // removes all activities in projectList and resets the appropriate textfields
 			{
 				projectList.removeAllElements();
 
 				actArea.setText("No activities");
-				pathArea.setText("No paths to display");
+				pathArea.setText("No path to display");
 				clearInputs();
-				startPointFlag = false;
 				errorLabel.setText("All activities removed");
 			}
 
@@ -196,13 +188,9 @@ public class ProjectPanel extends JPanel {
 
 				for (int i = 0; i < projectList.size(); i++) {
 					if (projectList.get(i).getProjTitle().equals(projToBeRemoved)) {
-						if (projectList.get(i).getProjDependencies().equals("")) {
-							startPointFlag = false;
-						}
 						projectList.remove(i);
 						removed = true;
 					}
-
 				}
 
 				if (removed) {
@@ -226,10 +214,41 @@ public class ProjectPanel extends JPanel {
 
 			}
 
+			if (source == aboutButton) {
+				clearInputs();
+				pathArea.setText(About.output());
+
+			}
+			if (source == findPathButton) {
+				clearInputs();
+				if (projectList.size() == 0) {
+					errorLabel.setText("Please enter activities to find path");
+				} else {
+					dGraph.setStart(0);
+					for (Project proj : projectList) {
+						for (String dependency : proj.getProjDependencies().split(",")) {
+							if (dependency.equals("")) {
+								dGraph.setStart(dGraph.getEdgeListSize());
+							}
+							dGraph.addEdge(dependency, proj.getProjTitle(), proj.getProjDuration());
+
+						}
+					}
+					if (dGraph.hasCycle(dGraph.getStart(), 0, "")) {
+						errorLabel.setText("Loop Detected");
+						return;
+					} else {
+						dGraph.pathFinder(dGraph.getStart(), 0, "");
+						pathArea.setText(dGraph.printPath());
+					}
+				}
+
+			}
+
 			// if there is no error, add a project to project list
 			// otherwise, show an error message
 
-		}
+		} // end of actionPerformed method
 
 		private void clearInputs() {
 			actField.setText("");
@@ -241,106 +260,85 @@ public class ProjectPanel extends JPanel {
 			actArea.setText("");
 			pathArea.setText("");
 		}
+
+		private void checkInputErrors(String activity, String duration, String dependency) {
+
+			if (activity.length() == 0 && duration.length() == 0 && dependency.length() == 0) {
+				eCode = 1;
+				printErrors();
+				return;
+			}
+			if (activity == "" || activity.length() == 0) {
+				eCode = 2;
+				printErrors();
+				return;
+			}
+			if (duration == "" || duration.length() == 0) {
+				eCode = 3;
+				printErrors();
+				return;
+			}
+			try {
+				projDuration = Integer.parseInt(durField.getText());
+			}
+
+			catch (java.lang.NumberFormatException e1) {
+				eCode = 4;
+				printErrors();
+				return;
+			}
+			if (projDuration < 0) {
+				eCode = 5;
+				printErrors();
+				return;
+			}
+
+			for (int i = 0; i < projectList.size(); i++)// for loop to cycle through vector
+			{
+				if (projectList.get(i).getProjTitle().equals(activity))// searches for duplicate project numbers and
+				{
+					eCode = 6;
+					printErrors();
+					return;
+				}
+			}
+			for (int i = 0; i < projectList.size(); i++) {
+				if (projectList.get(i).getProjDependencies().equals(dependency)) {
+					eCode = 7;
+					printErrors();
+					return;
+				}
+			}
+		}
+
+		private void printErrors() {
+			hasError = true;
+			switch (eCode) {
+			case 1:
+				errorLabel.setText("Please enter required fields");
+				break;
+			case 2:
+				errorLabel.setText("Please enter and activity name.");
+				break;
+			case 3:
+				errorLabel.setText("Please enter an activity duration.");
+				break;
+			case 4:
+				errorLabel.setText("Duration must be an integer.");
+				break;
+
+			case 5:
+				errorLabel.setText("Duration must be a positive integer.");
+				break;
+			case 6:
+				errorLabel.setText("Duplicate activities not allowed");
+				break;
+			case 7:
+				errorLabel.setText("This node must have a dependency, starting point already entered");
+				break;
+			}
+			clearInputs();
+		}
 	} // end of ButtonListener class
-
-	private class FindPath implements ActionListener {
-
-		private ArrayList<Edge> edgeList;
-		private ArrayList<Path> pathList;
-		private StringBuilder outString; // Stringbuilder object to manage output
-
-		public void actionPerformed(ActionEvent event) {
-			Object source = event.getSource();
-			if (!startPointFlag) {
-				errorLabel.setText("No starting point detected");
-				return;
-			}
-			if (source == findPathsButton && startPointFlag) {
-				errorLabel.setText("");
-				dependencyFlag = false;
-				if (projectList.size() == 0) {
-					errorLabel.setText("Please enter activities to find path");
-				} else {
-					edgeList = new ArrayList<Edge>();
-					pathList = new ArrayList<Path>();
-					int startNode = 0;
-					for (Project proj : projectList) {
-						dependencyFlag = false;
-						for (String dependency : proj.getProjDependencies().split(",")) {
-							if (dependency.equals("")) {
-								startNode = edgeList.size();
-								dependencyFlag = true;
-							}
-							for (int j = 0; j < projectList.size(); j++) {
-								if (dependency.equals(projectList.get(j).getProjTitle()))
-									dependencyFlag = true;
-							}
-							if (!dependencyFlag) {
-								errorLabel.setText("Non-existent dependency detected");
-								return;
-							}
-
-							Edge edge = new Edge();
-							edge.setEdge(dependency, proj.getProjTitle(), proj.getProjDuration());
-							edgeList.add(edge);
-						}
-					}
-
-					pathFinder(startNode, 0, "");
-
-					outString = new StringBuilder();
-
-					Collections.sort(pathList, Path.sortDur);
-
-					// print all paths sorted by duration
-					for (Path p : pathList) {
-						// add everything up together through each iteration...
-						outString.append(" Path:  ");
-						outString.append(p.getPathNodes());
-						outString.append(" Duration:  ");
-						outString.append(p.getPathDuration() + "\n");
-
-					}
-
-					pathArea.setText(outString.toString());
-				}
-			}
-		}
-
-		private void pathFinder(int cur, int sum, String tmpPath) {
-			int flag = 0;
-			int tmp;
-			if (Arrays.asList(tmpPath.split(",")).contains(edgeList.get(cur).getEdgeTail())) {
-				errorLabel.setText("Loop Detected");
-				return;
-			}
-			tmpPath = tmpPath + edgeList.get(cur).getEdgeTail();
-			tmpPath = tmpPath + ",";
-			for (int i = 0; i < edgeList.size(); i++) {
-				if (edgeList.get(i).getEdgeHead().equals(edgeList.get(cur).getEdgeTail())) {
-					sum += edgeList.get(cur).getTailDuration();
-					tmp = cur;
-					cur = i;
-					flag = 1;
-
-					pathFinder(cur, sum, tmpPath);
-					cur = tmp;
-					sum -= edgeList.get(cur).getTailDuration();
-				}
-			}
-
-			if (flag == 0) {
-				sum += edgeList.get(cur).getTailDuration();
-				Path path = new Path();
-				path.setPathNodes(tmpPath);
-				path.setPathDuration(sum);
-				pathList.add(path);
-				sum -= edgeList.get(cur).getTailDuration();
-			}
-			tmpPath = String.join(",", Arrays.copyOfRange(tmpPath.split(","), 0, tmpPath.split(",").length - 1));
-
-		}
-
-	}
 
 }
