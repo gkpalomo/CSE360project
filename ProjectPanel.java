@@ -246,7 +246,7 @@ public class ProjectPanel extends JPanel {
 						+ "ASU CSE360 Fall 2018\n"
 						+ "Monday 7:30 Group 5:\n"
 						+ " -- Brian Crethers\n"
-						+ " -- Elin (Yi-Chuan) Lin"
+						+ " -- Elin (Yi-Chuan) Lin\n"
 						+ " -- Giovanni Palomo\n"
 						+ " -- Stefan Savic\n");
 			}
