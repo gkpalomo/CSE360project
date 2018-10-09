@@ -26,7 +26,7 @@ public class ProjectPanel extends JPanel {
 
 	private String projName, projDepends;
 	private int projNum;
-	private boolean error1, error2, dependencyFlag; // error4;
+	private boolean error1, error2, dependencyFlag, loopFlag; // error4;
 	private boolean startPointFlag = false;
 
 	// constructor for project panel to be used in applet
@@ -132,7 +132,7 @@ public class ProjectPanel extends JPanel {
 						error1 = true;
 						clearInputs();
 						return;
-						
+
 					}
 					projName = (actField.getText());
 					projDepends = depField.getText();
@@ -241,21 +241,15 @@ public class ProjectPanel extends JPanel {
 			// otherwise, show an error message
 
 			if (source == aboutButton) {
-				pathArea.setText("Activity Planner GUI version 2.7\n"
-						+ "Version Date:  8 October 2018\n"
-						+ "ASU CSE360 Fall 2018\n"
-						+ "Monday 7:30 Group 5:\n"
-						+ " -- Brian Crethers\n"
-						+ " -- Elin (Yi-Chuan) Lin\n"
-						+ " -- Giovanni Palomo\n"
-						+ " -- Stefan Savic\n");
+				pathArea.setText("Activity Planner GUI version 2.7\n" + "Version Date:  8 October 2018\n"
+						+ "ASU CSE360 Fall 2018\n" + "Monday 7:30 Group 5:\n" + " -- Brian Crethers\n"
+						+ " -- Elin (Yi-Chuan) Lin\n" + " -- Giovanni Palomo\n" + " -- Stefan Savic\n");
 			}
-			
-			if(source == helpButton) {
+
+			if (source == helpButton) {
 				pathArea.setText("Pending Revision");
 			}
 		}
-	
 
 		private void clearInputs() {
 			actField.setText("");
@@ -284,6 +278,7 @@ public class ProjectPanel extends JPanel {
 			if (source == findPathsButton && startPointFlag) {
 				errorLabel.setText("");
 				dependencyFlag = false;
+				loopFlag = false;
 				if (projectList.size() == 0) {
 					errorLabel.setText("Please enter activities to find path");
 				} else {
@@ -300,9 +295,15 @@ public class ProjectPanel extends JPanel {
 							for (int j = 0; j < projectList.size(); j++) {
 								if (dependency.equals(projectList.get(j).getProjTitle()))
 									dependencyFlag = true;
+								if (projectList.get(j).getProjDependencies().contains(proj.getProjTitle()))
+									loopFlag = true;
 							}
 							if (!dependencyFlag) {
 								errorLabel.setText("Non-existent dependency detected");
+								return;
+							} 
+							if (loopFlag) {
+								errorLabel.setText("Loop detected");
 								return;
 							}
 
