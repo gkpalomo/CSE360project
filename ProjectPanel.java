@@ -293,15 +293,18 @@ public class ProjectPanel extends JPanel {
 								dependencyFlag = true;
 							}
 							for (int j = 0; j < projectList.size(); j++) {
-								if (dependency.equals(projectList.get(j).getProjTitle()))
+								if (dependency.equals(projectList.get(j).getProjTitle())) {
 									dependencyFlag = true;
-								if (projectList.get(j).getProjDependencies().contains(proj.getProjTitle()))
-									loopFlag = true;
+									for (String newDependency : projectList.get(j).getProjDependencies().split(",")) {
+										if (newDependency.equals(proj.getProjTitle()))
+											loopFlag = true;
+									}
+								}
 							}
 							if (!dependencyFlag) {
 								errorLabel.setText("Non-existent dependency detected");
 								return;
-							} 
+							}
 							if (loopFlag) {
 								errorLabel.setText("Loop detected");
 								return;
