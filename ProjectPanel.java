@@ -15,7 +15,7 @@ public class ProjectPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Vector<Project> projectList;// vector shared between the two panel classes
-	private JButton addActButton, clearAllButton, helpButton, remActButton, findPathsButton;
+	private JButton addActButton, clearAllButton, helpButton, remActButton, findPathsButton, aboutButton;
 	private JLabel titleLabel, actDurLabel, actDepLabel, errorLabel;
 	private JTextField actField, durField, depField;
 	private JTextArea actArea, pathArea;
@@ -26,7 +26,7 @@ public class ProjectPanel extends JPanel {
 
 	private String projName, projDepends;
 	private int projNum;
-	private boolean error1, error2, dependencyFlag, error4;
+	private boolean error1, error2, dependencyFlag; // error4;
 	private boolean startPointFlag = false;
 
 	// constructor for project panel to be used in applet
@@ -47,6 +47,7 @@ public class ProjectPanel extends JPanel {
 		helpButton = new JButton("Help");
 		remActButton = new JButton("Remove activity");
 		findPathsButton = new JButton("Find paths!");
+		aboutButton = new JButton("About");
 		// projList = new JList(projectList);
 		// Inputs bunched together into one panel
 		inputPanel = new JPanel();
@@ -68,6 +69,7 @@ public class ProjectPanel extends JPanel {
 		botButtonPanel.setLayout(new FlowLayout());
 		botButtonPanel.add(clearAllButton);
 		botButtonPanel.add(helpButton);
+		botButtonPanel.add(aboutButton);
 		// all buttons combined
 		allButtonPanel = new JPanel();
 		allButtonPanel.setLayout(new GridLayout(3, 1));
@@ -100,6 +102,8 @@ public class ProjectPanel extends JPanel {
 		clearAllButton.addActionListener(new ButtonListener());
 		remActButton.addActionListener(new ButtonListener());
 		findPathsButton.addActionListener(new FindPath());
+		helpButton.addActionListener(new ButtonListener());
+		aboutButton.addActionListener(new ButtonListener());
 
 	}
 
@@ -123,6 +127,13 @@ public class ProjectPanel extends JPanel {
 				try {
 					projNum = Integer.parseInt(durField.getText()); // tries to parse the value as an int, sends error
 																	// if not int
+					if (projNum < 0) { // number must be positive - can be 0 for a place holder...
+						errorLabel.setText("Durations must be positive integers.");
+						error1 = true;
+						clearInputs();
+						return;
+						
+					}
 					projName = (actField.getText());
 					projDepends = depField.getText();
 
@@ -229,7 +240,22 @@ public class ProjectPanel extends JPanel {
 			// if there is no error, add a project to project list
 			// otherwise, show an error message
 
+			if (source == aboutButton) {
+				pathArea.setText("Activity Planner GUI version 2.7\n"
+						+ "Version Date:  8 October 2018\n"
+						+ "ASU CSE360 Fall 2018\n"
+						+ "Monday 7:30 Group 5:\n"
+						+ " -- Brian Crethers\n"
+						+ " -- Elin (Yi-Chuan) Lin"
+						+ " -- Giovanni Palomo\n"
+						+ " -- Stefan Savic\n");
+			}
+			
+			if(source == helpButton) {
+				pathArea.setText("Pending Revision");
+			}
 		}
+	
 
 		private void clearInputs() {
 			actField.setText("");
