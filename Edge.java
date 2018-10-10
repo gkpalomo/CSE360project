@@ -1,4 +1,4 @@
-
+//package master_101018a;
 
 public class Edge {
 	

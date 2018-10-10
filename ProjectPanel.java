@@ -1,3 +1,4 @@
+//package master_101018a;
 
 import javax.swing.*;
 import java.awt.*;
@@ -248,14 +249,16 @@ public class ProjectPanel extends JPanel {
 			}
 
 			if (source == helpButton) {
-                String help = "<html><b>Add activity<br/>\nAdds an activity consisting of a " +
+				String help = HelpFile.help();
+               /* String help = "<html><b>Add activity<br/>\nAdds an activity consisting of a " +
                         "string-based name, an int duration and any number\nof dependencies to a list of " +
                         "projects\n<html><b>Remove activity<br/>\nRemoves a user-specified activity from the current " +
                         "list of projects and clears it from\nthe activity view\n<html><b>Find paths!<br/>\nSorts the" +
                         " current list of projects in order of the activity name and displays the result" +
                         "\n<html><b>Clear all<br/>\nResets the current session by removing every entered activity " +
-                        "from the project list";
-                JOptionPane.showMessageDialog(null, help, "Help", JOptionPane.PLAIN_MESSAGE);
+                        "from the project list";*/
+                //JOptionPane.showMessageDialog(null, help, "Help", JOptionPane.PLAIN_MESSAGE);
+				pathArea.setText(help);
 
 			}
 		}

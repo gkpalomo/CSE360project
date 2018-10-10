@@ -1,6 +1,8 @@
+//package master_101018a;
+
 import java.util.Vector;
 
-import javax.swing.JApplet;
+//import javax.swing.JApplet;
 import javax.swing.JFrame;
 
 public class PathFinder {

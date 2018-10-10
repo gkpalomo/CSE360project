@@ -1,10 +1,11 @@
+//package master_101018a;
 
 import javax.swing.*;
 
-import java.awt.Container;
+//import java.awt.Container;
 import java.util.*;
 
-@SuppressWarnings("deprecation")
+//@SuppressWarnings("deprecation")
 public class main extends JApplet
 {
     /**
