@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,15 +17,17 @@ public class ProjectPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Vector<Project> projectList;// vector shared between the two panel classes
-	private JButton addActButton, clearAllButton, helpButton, remActButton, findPathsButton, aboutButton;
+	private JButton addActButton, clearAllButton, remActButton, findPathsButton, durationButton, criticalButton;
 	private JLabel titleLabel, actDurLabel, actDepLabel, errorLabel;
 	private JTextField actField, durField, depField;
 	private JTextArea actArea, pathArea;
-	private JPanel inputPanel, topButtonPanel, allButtonPanel, inputAndButtonsPanel, inputAndScroll, botButtonPanel;// ,panel7;
-	private JScrollPane scroll, scroll2;// ,scroll3;
-	// private JList projList,list1,list2;
-	// private Project selectedProj1,selectedProj2;
-
+	private JPanel inputPanel, topButtonPanel, allButtonPanel, inputAndButtonsPanel, inputAndScroll, botButtonPanel;
+	private JScrollPane scroll, scroll2;
+	public JMenuBar menuBar;
+	private JMenu menu;
+	JMenuItem fileMenuItem, helpMenuItem, aboutMenuItem;
+	JRadioButtonMenuItem rbMenuItem;
+	JCheckBoxMenuItem cbMenuItem;
 	private String projName, projDepends;
 	private int projNum;
 	private boolean error1, error2, dependencyFlag, loopFlag; // error4;
@@ -45,11 +48,14 @@ public class ProjectPanel extends JPanel {
 		depField = new JTextField();
 		addActButton = new JButton("Add activity");
 		clearAllButton = new JButton("Clear all");
-		helpButton = new JButton("Help");
+		//helpButton = new JButton("Help");
 		remActButton = new JButton("Remove activity");
-		findPathsButton = new JButton("Find paths!");
-		aboutButton = new JButton("About");
-		// projList = new JList(projectList);
+		findPathsButton = new JButton("Find paths");
+		//aboutButton = new JButton("About");
+		durationButton = new JButton("Change duration");
+		//fileButton = new JButton("Print to file");
+		criticalButton = new JButton("Critical path");
+		
 		// Inputs bunched together into one panel
 		inputPanel = new JPanel();
 		inputPanel.setLayout(new GridLayout(4, 2));
@@ -59,23 +65,28 @@ public class ProjectPanel extends JPanel {
 		inputPanel.add(durField);
 		inputPanel.add(actDepLabel);
 		inputPanel.add(depField);
+		
 		// top button group
 		topButtonPanel = new JPanel();
 		topButtonPanel.setLayout(new FlowLayout());
 		topButtonPanel.add(addActButton);
 		topButtonPanel.add(remActButton);
-		topButtonPanel.add(findPathsButton);
+		topButtonPanel.add(durationButton);
+				
 		// bottom button group
 		botButtonPanel = new JPanel();
 		botButtonPanel.setLayout(new FlowLayout());
 		botButtonPanel.add(clearAllButton);
-		botButtonPanel.add(helpButton);
-		botButtonPanel.add(aboutButton);
+		botButtonPanel.add(findPathsButton);
+		botButtonPanel.add(criticalButton);
+		
 		// all buttons combined
 		allButtonPanel = new JPanel();
 		allButtonPanel.setLayout(new GridLayout(3, 1));
 		allButtonPanel.add(topButtonPanel);
+		//allButtonPanel.add(midButtonPanel);
 		allButtonPanel.add(botButtonPanel);
+		
 		// input fields and buttons grouped
 		inputAndButtonsPanel = new JPanel(); // left side panel
 		inputAndButtonsPanel.setLayout(new GridLayout(3, 1));
@@ -98,14 +109,28 @@ public class ProjectPanel extends JPanel {
 		setLayout(new GridLayout(2, 1));
 		add(inputAndScroll);
 		add(scroll2);
-
+		
+		//menu bar for additional options, as to not clutter UI with too many buttons
+		menuBar = new JMenuBar();
+		//Build the first menu.
+		menu = new JMenu("Options");
+		menuBar.add(menu);
+		
+		//a group of JMenuItems
+		fileMenuItem = new JMenuItem("Print to file");
+		menu.add(fileMenuItem);
+		helpMenuItem = new JMenuItem("Help");
+		menu.add(helpMenuItem);
+		aboutMenuItem = new JMenuItem("About");
+		menu.add(aboutMenuItem);
+	
 		addActButton.addActionListener(new ButtonListener());
 		clearAllButton.addActionListener(new ButtonListener());
 		remActButton.addActionListener(new ButtonListener());
 		findPathsButton.addActionListener(new FindPath());
-		helpButton.addActionListener(new ButtonListener());
-		aboutButton.addActionListener(new ButtonListener());
-
+		helpMenuItem.addActionListener(new ButtonListener());
+		aboutMenuItem.addActionListener(new ButtonListener());
+		fileMenuItem.addActionListener(new ButtonListener());
 	}
 
 	// ButtonListener is a listener class that listens to
@@ -241,14 +266,24 @@ public class ProjectPanel extends JPanel {
 			// if there is no error, add a project to project list
 			// otherwise, show an error message
 
-			if (source == aboutButton) {
-                String about = "Activity Planner GUI version 2.7\n" + "Version Date:  8 October 2018\n"
+			if (source == aboutMenuItem) {
+                String about = "Activity Planner GUI version 3.0\n" + "Version Date:  3 November 2018\n"
                         + "ASU CSE360 Fall 2018\n\n" + "Monday 7:30 Group 5:\n" + "Brian Crethers\n"
                         + "Elin (Yi-Chuan) Lin\n" + "Giovanni Palomo\n" + "Stefan Savic\n";
                 JOptionPane.showMessageDialog(null, about, "About", JOptionPane.PLAIN_MESSAGE);
 			}
-
-			if (source == helpButton) {
+			
+			if (source == fileMenuItem) {
+                String inputError = "Please enter a name for the output file";
+                String success = "Successfully printed to file ";
+                String info = JOptionPane.showInputDialog("File name?");
+                if(info.equals(""))
+                	JOptionPane.showMessageDialog(null, inputError, "Error", JOptionPane.PLAIN_MESSAGE);
+                else
+                	JOptionPane.showMessageDialog(null, success, "Success!", JOptionPane.PLAIN_MESSAGE);
+			}
+			
+			if (source == helpMenuItem) {
 				String help = HelpFile.help();
                /* String help = "<html><b>Add activity<br/>\nAdds an activity consisting of a " +
                         "string-based name, an int duration and any number\nof dependencies to a list of " +
@@ -386,3 +421,8 @@ public class ProjectPanel extends JPanel {
 	}
 
 }
+
+
+
+
+

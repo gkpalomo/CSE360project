@@ -18,7 +18,8 @@ public class PathFinder {
 		frame.pack();
 		frame.setVisible(true);
 		frame.setSize(800, 600);
-		frame.setTitle("Activity Planner v2.7");
+		frame.setJMenuBar(projPanel.menuBar);
+		frame.setTitle("Activity Planner v3.0");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }
