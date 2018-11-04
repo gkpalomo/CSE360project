@@ -31,7 +31,7 @@ public class ProjectPanel extends JPanel {
 	private String projName, projDepends;
 	private int projNum;
 	private boolean error1, error2, dependencyFlag, loopFlag; // error4;
-	private boolean startPointFlag = false;
+	private boolean startPointFlag = false, actFlag = false;
 
 	// constructor for project panel to be used in applet
 	public ProjectPanel(Vector<Project> projectList) {
@@ -128,9 +128,12 @@ public class ProjectPanel extends JPanel {
 		clearAllButton.addActionListener(new ButtonListener());
 		remActButton.addActionListener(new ButtonListener());
 		findPathsButton.addActionListener(new FindPath());
+		criticalButton.addActionListener(new ButtonListener());
+		durationButton.addActionListener(new ButtonListener());
 		helpMenuItem.addActionListener(new ButtonListener());
 		aboutMenuItem.addActionListener(new ButtonListener());
 		fileMenuItem.addActionListener(new ButtonListener());
+		
 	}
 
 	// ButtonListener is a listener class that listens to
@@ -263,8 +266,81 @@ public class ProjectPanel extends JPanel {
 
 			}
 
-			// if there is no error, add a project to project list
-			// otherwise, show an error message
+			//changing duration section
+			
+			if (source == durationButton && actField.getText().length() > 0 && durField.getText().length() > 0) {
+				
+				actFlag = false;
+
+				try {
+					projNum = Integer.parseInt(durField.getText()); // tries to parse the value as an int, sends error
+																	// if not int
+					if (projNum < 0) { // number must be positive - can be 0 for a place holder...
+						errorLabel.setText("Durations must be positive integers.");
+						//error1 = true;
+						clearInputs();
+						return;
+
+					}
+					projName = (actField.getText());
+					//projDepends = depField.getText();
+
+				} catch (java.lang.NumberFormatException e1) {
+					errorLabel.setText("Please enter an integer for the activity duration");// error message to print
+					//error1 = true;
+					clearInputs();
+					return;
+				}
+
+				for (int i = 0; i < projectList.size(); i++)// for loop to cycle through vector
+				{
+					if (projectList.get(i).getProjTitle().equals(projName)) {
+						actFlag = true;
+						projDepends = projectList.get(i).getProjDependencies();
+						projectList.remove(i);
+					}
+				}
+
+				if(!actFlag) {
+					errorLabel.setText("Non-existent activity");
+					clearInputs();
+					return;
+				}
+				
+				clearOutputs();
+				
+				Project proj2 = new Project();
+				proj2.setProjDependencies(projDepends);
+				proj2.setProjDuration(projNum);
+				proj2.setProjTitle(projName);
+
+				projectList.add(proj2);
+				
+				for (int k = 0; k < projectList.size(); k++) {
+					actArea.append(projectList.get(k).toString()); // reprints the current activities after removal
+				}
+				errorLabel.setText("Duration edited");
+				clearInputs();
+				return;
+				
+				
+			}
+			
+			else if (source == durationButton && (actField.getText().length() == 0 || durField.getText().length() == 0)) {
+				errorLabel.setText("Please enter required fields");
+				clearInputs();
+			}
+			
+			
+			if(source == criticalButton) {
+				errorLabel.setText("");
+				if(projectList.isEmpty())
+					errorLabel.setText("No critical paths to display");
+				
+				
+				
+			}
+			
 
 			if (source == aboutMenuItem) {
                 String about = "Activity Planner GUI version 3.0\n" + "Version Date:  3 November 2018\n"
