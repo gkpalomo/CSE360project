@@ -1,4 +1,4 @@
-//package master_101018a;
+package patch_v3_6;
 
 import java.util.Vector;
 
@@ -17,9 +17,9 @@ public class PathFinder {
 		frame.getContentPane().add(projPanel);
 		frame.pack();
 		frame.setVisible(true);
-		frame.setSize(800, 600);
+		frame.setSize(800, 700);
 		frame.setJMenuBar(projPanel.menuBar);
-		frame.setTitle("Activity Planner v3.0");
+		frame.setTitle("Activity Planner v3.6");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }

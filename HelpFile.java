@@ -1,4 +1,4 @@
-//package master_101018a;
+package patch_v3_6;
 
 public abstract class HelpFile {
 	
