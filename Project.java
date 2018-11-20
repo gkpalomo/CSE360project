@@ -1,8 +1,9 @@
-//package master_101018a;
+package patch_v3_6;
+
 
 //import java.lang.reflect.Array;
 //import java.util.*;  
-public class Project {
+public class Project{
     private String projTitle;
     private int projDuration;
     private String projDependencies;
@@ -41,6 +42,18 @@ public class Project {
     public void setProjDependencies(String dependencies) {
         projDependencies = dependencies;
     }
+    
+    public String getActnDur() {
+    	StringBuilder output = new StringBuilder();
+    	
+    	//output.append("Actvity: ");
+    	output.append(projTitle + " ");
+    	//output.append("Duration: ");
+    	output.append(projDuration + "\n");
+    	
+    	return output.toString();
+    	
+    }
 
     // toString() method returns a string containing its title, number, and location
     public String toString() {
@@ -54,6 +67,7 @@ public class Project {
         output.append("\n\n");
         return output.toString();
     }
+
     
     
     //get, set, parse dependencies
