@@ -1,4 +1,4 @@
-package patch_v3_6;
+package patch_v3_6a;
 
 public abstract class HelpFile {
 	
@@ -36,6 +36,10 @@ public abstract class HelpFile {
 				+ "both \npaths to C will be displayed in the text field bewith the coresponding durations:\n"
 				+ "Path:  A,B,C, Duration:  9\n" 
 				+ "Path:  A,C, Duration:  5 \n\n"
+				+ "Writing to File:\n\n"
+				+ "Select \"Print to File\" in the Options drop-down"
+				+ ". Enter the desired file name in the text area and click \"OK.\""
+				+ "\nThe text file will be written to the root folder where your program is coppied i.e. the desktop.\n\n"
 				+ "Clearing All Input:\n\n"
 				+ "The \"Clear all,\" button will clear all input previously entered.  Use caution in using this button as all entries will be lost. "
 				+ " A message will be \ndisplayed in red above the text entry boxes indicating this has been done and both output fields will be"

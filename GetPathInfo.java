@@ -1,4 +1,4 @@
-package patch_v3_6;
+package patch_v3_6a;
 
 import java.io.FileWriter;
 import java.io.IOException;

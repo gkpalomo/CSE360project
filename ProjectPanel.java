@@ -1,4 +1,5 @@
-package patch_v3_6;
+package patch_v3_6a;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +32,8 @@ public class ProjectPanel extends JPanel {
 	private String projName, projDepends;
 	private int projNum;
 	private boolean error1, error2;// dependencyFlag, loopFlag; // error4;
-	private boolean startPointFlag = false, actFlag = false;
+	private boolean actFlag = false;
+	private int startPointFlag = 0;
 
 	// constructor for project panel to be used in applet
 	public ProjectPanel(Vector<Project> projectList) {
@@ -189,11 +191,11 @@ public class ProjectPanel extends JPanel {
 					}
 				}
 
-				if (projDepends.equals("") && startPointFlag) {
+				/*if (projDepends.equals("") && startPointFlag) {
 					errorLabel.setText("Multiple start points detected");
 					clearInputs();
 					return;
-				}
+				}*/
 
 				if (!(error1 || error2))// if all criteria are met for it to be a new project,
 				// creates and adds to vector
@@ -203,8 +205,8 @@ public class ProjectPanel extends JPanel {
 					proj.setProjDuration(projNum);
 					proj.setProjTitle(projName);
 
-					if (projDepends.equals("") && !startPointFlag) {
-						startPointFlag = true;
+					if (projDepends.equals("")) {
+						startPointFlag ++;
 					}
 
 					projectList.add(proj);
@@ -234,7 +236,7 @@ public class ProjectPanel extends JPanel {
 				actArea.setText("No activities");
 				pathArea.setText("No paths to display");
 				clearInputs();
-				startPointFlag = false;
+				startPointFlag = 0;
 				errorLabel.setText("All activities removed");
 			}
 			
@@ -250,7 +252,7 @@ public class ProjectPanel extends JPanel {
 				for (int i = 0; i < projectList.size(); i++) {
 					if (projectList.get(i).getProjTitle().equals(projToBeRemoved)) {
 						if (projectList.get(i).getProjDependencies().equals("")) {
-							startPointFlag = false;
+							startPointFlag --;
 						}
 						projectList.remove(i);
 						removed = true;
@@ -351,7 +353,7 @@ public class ProjectPanel extends JPanel {
 
 			if (source == findPathsButton) {
 				
-				if(!startPointFlag) {
+				if(startPointFlag==0) {
 					errorLabel.setText("No Starting point detected");
 					return;
 				}
@@ -367,10 +369,14 @@ public class ProjectPanel extends JPanel {
 
 					if (path.checkDependency()) {
 
-						errorLabel.setText("Non-existent dependency detected");
+						errorLabel.setText("Non-existent dependency detected.");
 
 					} else if (path.checkLoop()) {
 						errorLabel.setText("Loop detected");
+					} 
+					else if (startPointFlag>1) {
+						errorLabel.setText("Disconnected nodes detected.");
+
 					} else {
 						pathArea.setText(path.toString());
 					}
@@ -381,9 +387,9 @@ public class ProjectPanel extends JPanel {
 //			Critical Paths button
 //***********************************************************************************************************
 
-			if (source == criticalButton && startPointFlag) {
+			if (source == criticalButton) {
 
-				if(!startPointFlag) {
+				if(startPointFlag==0) {
 					errorLabel.setText("No Starting point detected");
 					return;
 				}
@@ -398,10 +404,12 @@ public class ProjectPanel extends JPanel {
 
 					if (path.checkDependency()) {
 
-						errorLabel.setText("Non-existent dependency detected");
+						errorLabel.setText("Disconnected nodes detected.");
 
 					} else if (path.checkLoop()) {
 						errorLabel.setText("Loop detected");
+					} else if (startPointFlag>1) {
+						errorLabel.setText("Disconnected nodes detected.");
 					} else {
 						pathArea.setText("Critical Path: \n" + path.getCritical());
 					}
@@ -458,15 +466,21 @@ public class ProjectPanel extends JPanel {
 //***********************************************************************************************************
 
 			if (source == helpMenuItem) {
-//				String help = HelpFile.help();
-				String help = "<html><b>Add activity<br/>\nAdds an activity consisting of a "
-						+ "string-based name, an int duration and any number\nof dependencies to a list of "
-						+ "projects\n<html><b>Remove activity<br/>\nRemoves a user-specified activity from the current "
-						+ "list of projects and clears it from\nthe activity view\n<html><b>Find paths!<br/>\nSorts the"
-						+ " current list of projects in order of the activity name and displays the result"
-						+ "\n<html><b>Clear all<br/>\nResets the current session by removing every entered activity "
-						+ "from the project list";
-				JOptionPane.showMessageDialog(null, help, "Help", JOptionPane.PLAIN_MESSAGE);
+				String help = HelpFile.help();
+				JTextArea helpArea = new JTextArea(help);
+				JScrollPane helpPane = new JScrollPane(helpArea);
+				helpArea.setLineWrap(true);
+				helpArea.setWrapStyleWord(true);
+				helpPane.setPreferredSize(new Dimension(800,500));
+				//String help = "<html><b>Add activity<br/>\nAdds an activity consisting of a "
+				//		+ "string-based name, an int duration and any number\nof dependencies to a list of "
+				//		+ "projects\n<html><b>Remove activity<br/>\nRemoves a user-specified activity from the current "
+				//		+ "list of projects and clears it from\nthe activity view\n<html><b>Find paths!<br/>\nSorts the"
+				//		+ " current list of projects in order of the activity name and displays the result"
+				//		+ "\n<html><b>Clear all<br/>\nResets the current session by removing every entered activity "
+				//		+ "from the project list";
+
+				JOptionPane.showMessageDialog(null, helpPane, "Help", JOptionPane.PLAIN_MESSAGE);
 				//pathArea.setText(help);  //HTML tags won't work...
 
 			}
